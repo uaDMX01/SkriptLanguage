@@ -8,6 +8,7 @@
 
 import os
 import re
+import csv
 from typing import List, Dict, Tuple
 
 
@@ -28,7 +29,7 @@ class StudentManager:
     
     def read_group_file(self, group_name: str) -> List[Tuple[str, float]]:
         """
-        Читає дані з файлу групи.
+        Читає дані з файлу групи використовуючи модуль csv.
         
         Args:
             group_name: Назва групи
@@ -40,18 +41,24 @@ class StudentManager:
         students = []
         
         try:
-            with open(file_path, 'r', encoding='utf-8') as file:
-                for line in file:
-                    line = line.strip()
-                    if line:
-                        parts = line.split(':')
-                        if len(parts) == 2:
-                            name = parts[0]
-                            try:
-                                avg_grade = float(parts[1])
-                                students.append((name, avg_grade))
-                            except ValueError:
-                                print(f"Помилка при конвертації оцінки для студента {name}. Пропускаємо запис.")
+            # Відкриття файлу
+            fd = open(file_path, 'r', encoding='utf-8')
+            
+            # Використання csv.reader з розділювачем ':'
+            reader = csv.reader(fd, delimiter=":")
+            
+            # Читання даних з файлу
+            for row in reader:
+                if len(row) == 2:  # Перевірка, що рядок має два елементи
+                    name = row[0]
+                    try:
+                        avg_grade = float(row[1])
+                        students.append((name, avg_grade))
+                    except ValueError:
+                        print(f"Помилка при конвертації оцінки для студента {name}. Пропускаємо запис.")
+            
+            # Закриття файлу
+            fd.close()
         except FileNotFoundError:
             print(f"Файл для групи {group_name} не знайдено.")
         
@@ -59,7 +66,7 @@ class StudentManager:
     
     def write_to_group_file(self, group_name: str, students_data: List[Tuple[str, float]]) -> bool:
         """
-        Записує дані студентів у файл групи (перезаписуючи існуючий файл).
+        Записує дані студентів у файл групи (перезаписуючи існуючий файл) використовуючи модуль csv.
         
         Args:
             group_name: Назва групи
@@ -71,9 +78,18 @@ class StudentManager:
         file_path = os.path.join(self.directory_path, f"{group_name}.txt")
         
         try:
-            with open(file_path, 'w', encoding='utf-8') as file:
-                for name, avg_grade in students_data:
-                    file.write(f"{name}:{avg_grade}\n")
+            # Відкриття файлу для запису
+            fd = open(file_path, 'w', encoding='utf-8', newline='')
+            
+            # Використання csv.writer з розділювачем ':'
+            writer = csv.writer(fd, delimiter=":")
+            
+            # Запис даних у файл
+            for name, avg_grade in students_data:
+                writer.writerow([name, avg_grade])
+                
+            # Закриття файлу
+            fd.close()
             return True
         except Exception as e:
             print(f"Помилка при записі у файл групи {group_name}: {e}")
@@ -81,7 +97,7 @@ class StudentManager:
             
     def append_to_group_file(self, group_name: str, students_data: List[Tuple[str, float]]) -> bool:
         """
-        Дозаписує дані студентів у файл групи.
+        Дозаписує дані студентів у файл групи використовуючи модуль csv.
         
         Args:
             group_name: Назва групи
@@ -93,9 +109,18 @@ class StudentManager:
         file_path = os.path.join(self.directory_path, f"{group_name}.txt")
         
         try:
-            with open(file_path, 'a', encoding='utf-8') as file:
-                for name, avg_grade in students_data:
-                    file.write(f"{name}:{avg_grade}\n")
+            # Відкриття файлу для дозапису
+            fd = open(file_path, 'a', encoding='utf-8', newline='')
+            
+            # Використання csv.writer з розділювачем ':'
+            writer = csv.writer(fd, delimiter=":")
+            
+            # Дозапис даних у файл
+            for name, avg_grade in students_data:
+                writer.writerow([name, avg_grade])
+                
+            # Закриття файлу
+            fd.close()
             return True
         except Exception as e:
             print(f"Помилка при дозаписі у файл групи {group_name}: {e}")
@@ -161,7 +186,7 @@ class StudentManager:
     
     def sort_group_by_average_grade(self, group_name: str, ascending: bool = True) -> List[Tuple[str, float]]:
         """
-        Сортує дані у файлі групи за середнім балом.
+        Сортує дані у файлі групи за середнім балом використовуючи модуль csv.
         
         Args:
             group_name: Назва групи
@@ -170,14 +195,27 @@ class StudentManager:
         Returns:
             Відсортований список кортежів (ім'я студента, середній бал)
         """
+        # Читаємо дані з файлу
         students = self.read_group_file(group_name)
+        
+        # Сортуємо дані за середнім балом
         sorted_students = sorted(students, key=lambda x: x[1], reverse=not ascending)
         
-        # Перезаписуємо файл з відсортованими даними
+        # Перезаписуємо файл з відсортованими даними використовуючи csv
         file_path = os.path.join(self.directory_path, f"{group_name}.txt")
-        with open(file_path, 'w', encoding='utf-8') as file:
-            for name, avg_grade in sorted_students:
-                file.write(f"{name}:{avg_grade}\n")
+        
+        # Відкриття файлу для запису
+        fd = open(file_path, 'w', encoding='utf-8', newline='')
+        
+        # Використання csv.writer з розділювачем ':'
+        writer = csv.writer(fd, delimiter=":")
+        
+        # Запис відсортованих даних у файл
+        for name, avg_grade in sorted_students:
+            writer.writerow([name, avg_grade])
+            
+        # Закриття файлу
+        fd.close()
         
         return sorted_students
         
