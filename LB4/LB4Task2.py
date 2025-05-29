@@ -1,5 +1,5 @@
 # Зчитування тексту з файлу
-file_path = "ХорЕлементів.txt"  # Шлях до файлу
+file_path = "M:\Programing\Python\SkriptLanguage\LB4\ХорЕлементів.txt"  # Шлях до файлу
 try:
     with open(file_path, 'r', encoding='utf-8') as file:
         text = file.read()
