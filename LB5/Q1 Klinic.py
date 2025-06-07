@@ -11,7 +11,7 @@ class Person:
         return f"{self.name} (ID: {self.id})"
 
 class Patient(Person):
-    """Клас для пацієнтів."""
+    """Клас для пацієнтів1."""
     def __init__(self, id, name, contact_info, birth_date):
         super().__init__(id, name, contact_info)
         self.birth_date = birth_date
