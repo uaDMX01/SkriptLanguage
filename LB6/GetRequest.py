@@ -10,6 +10,7 @@ def analyze_news_page(url):
     """
     try:
         response = requests.get(url)
+        response.encoding = 'utf-8' #дописав кодування
         response.raise_for_status()  # Перевірка на помилки HTTP
         html_content = response.text
     except requests.exceptions.RequestException as e:
@@ -60,7 +61,7 @@ def analyze_news_page(url):
     print(f"\nКількість посилань: {num_links}")
     print(f"Кількість зображень: {num_images}")
 
-# Приклад використання для https://qoopixie.com/
+#  використання для https://www.ukr.net
 if __name__ == "__main__":
-    news_url = "https://www.unian.ua/"
+    news_url = "https://www.ukr.net"
     analyze_news_page(news_url)
